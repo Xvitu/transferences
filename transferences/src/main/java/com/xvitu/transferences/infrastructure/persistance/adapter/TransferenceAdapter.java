@@ -9,11 +9,11 @@ import org.springframework.stereotype.Component;
 public class TransferenceAdapter {
     public TransferenceEntity toEntity(Transference domainTransference) {
         return new TransferenceEntity(
-                domainTransference.getId(),
-                domainTransference.getAmount(),
-                domainTransference.getStatus(),
-                domainTransference.getPayerId(),
-                domainTransference.getPayeeId()
+                domainTransference.id(),
+                domainTransference.amount(),
+                domainTransference.status(),
+                domainTransference.payerId(),
+                domainTransference.payeeId()
         );
     }
 
