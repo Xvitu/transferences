@@ -5,9 +5,11 @@ import com.xvitu.transferences.domain.entity.Wallet;
 import com.xvitu.transferences.infrastructure.persistance.adapter.WalletAdapter;
 import com.xvitu.transferences.infrastructure.persistance.jpa.entity.WalletEntity;
 import com.xvitu.transferences.infrastructure.persistance.jpa.repository.WalletRepository;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class WalletDataProviderImpl implements WalletDataProvider {
 
     private final WalletRepository repository;
