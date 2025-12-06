@@ -9,7 +9,7 @@ public class Transference {
     private UUID id;
     private BigDecimal amount;
     private TransferenceStatus status;
-    private UUID originUserId;
-    private UUID destinationUserId;
+    private UUID payerId;
+    private UUID payeeId;
 
 }
