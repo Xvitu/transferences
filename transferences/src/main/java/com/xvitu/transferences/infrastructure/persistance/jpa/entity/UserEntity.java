@@ -1,5 +1,6 @@
 package com.xvitu.transferences.infrastructure.persistance.jpa.entity;
 
+import com.xvitu.transferences.domain.enums.UserType;
 import jakarta.persistence.*;
 import java.util.UUID;
 
@@ -26,14 +27,18 @@ public class UserEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private UserType type;
+
     public UserEntity(
-          UUID id, String fullName, String document, String email, String password
+          UUID id, String fullName, String document, String email, String password, UserType type
     ) {
         this.id = id;
         this.fullName = fullName;
         this.document = document;
         this.email = email;
         this.password = password;
+        this.type = type;
     }
 
     public UUID getId() {
@@ -70,5 +75,13 @@ public class UserEntity {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public UserType getType() {
+        return type;
+    }
+
+    public void setType(UserType type) {
+        this.type = type;
     }
 }

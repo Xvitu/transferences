@@ -12,7 +12,8 @@ public class UserAdapter {
                 domainUser.getFullName(),
                 domainUser.getDocument(),
                 domainUser.getEmail(),
-                domainUser.getPassword()
+                domainUser.getPassword(),
+                domainUser.getType()
         );
     }
 
@@ -23,7 +24,8 @@ public class UserAdapter {
                 entity.getFullName(),
                 entity.getDocument(),
                 entity.getEmail(),
-                entity.getPassword()
+                entity.getPassword(),
+                entity.getType()
         );
     }
 }
