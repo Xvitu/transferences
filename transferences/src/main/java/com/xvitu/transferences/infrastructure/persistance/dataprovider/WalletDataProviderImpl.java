@@ -1,8 +1,13 @@
 package com.xvitu.transferences.infrastructure.persistance.dataprovider;
 
 import com.xvitu.transferences.domain.dataprovider.WalletDataProvider;
+import com.xvitu.transferences.domain.entity.Wallet;
 import com.xvitu.transferences.infrastructure.persistance.adapter.WalletAdapter;
+import com.xvitu.transferences.infrastructure.persistance.jpa.entity.WalletEntity;
 import com.xvitu.transferences.infrastructure.persistance.jpa.repository.WalletRepository;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public class WalletDataProviderImpl implements WalletDataProvider {
 
@@ -13,5 +18,11 @@ public class WalletDataProviderImpl implements WalletDataProvider {
     public WalletDataProviderImpl(WalletRepository repository, WalletAdapter adapter) {
         this.repository = repository;
         this.adapter = adapter;
+    }
+
+    @Override
+    public Optional<Wallet> findByUserId(UUID userId) {
+        Optional<WalletEntity> walletEntity = repository.findByUserId(userId);
+        return walletEntity.map(adapter::toDomain);
     }
 }

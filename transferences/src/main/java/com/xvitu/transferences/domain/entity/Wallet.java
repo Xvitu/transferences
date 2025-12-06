@@ -26,4 +26,11 @@ public class Wallet {
     public UUID getUserId() {
         return userId;
     }
+
+    public void ensureHasFunds(BigDecimal value) {
+        if (this.availableAmount.compareTo(value) < 0) {
+            // todo - exception
+            throw new RuntimeException();
+        }
+    }
 }

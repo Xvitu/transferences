@@ -39,4 +39,27 @@ public class Transference {
     public UUID getPayerId() {
         return payerId;
     }
+
+    public static Transference pending(BigDecimal amount, UUID payerId, UUID payeeId) {
+
+        validate(amount, payerId, payeeId);
+
+        return new Transference(
+                UUID.randomUUID(),
+                amount,
+                TransferenceStatus.PENDING,
+                payerId,
+                payeeId
+        );
+    }
+
+    public static void validate(BigDecimal amount, UUID payerId, UUID payeeId) {
+        if (payerId.equals(payeeId)) {
+            throw new IllegalArgumentException("Payer and Payee cannot be the same");
+        }
+
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
+        }
+    }
 }
