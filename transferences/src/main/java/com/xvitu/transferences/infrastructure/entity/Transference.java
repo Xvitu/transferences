@@ -1,4 +1,4 @@
-package com.xvitu.transferences.infrastructure;
+package com.xvitu.transferences.infrastructure.entity;
 
 import com.xvitu.transferences.domain.enums.TransferenceStatus;
 import jakarta.persistence.*;
@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "transferences")
+// todo - flyway
 public class Transference {
 
     @Id

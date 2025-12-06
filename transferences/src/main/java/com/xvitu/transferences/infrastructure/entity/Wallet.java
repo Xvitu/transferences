@@ -1,4 +1,4 @@
-package com.xvitu.transferences.infrastructure;
+package com.xvitu.transferences.infrastructure.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
