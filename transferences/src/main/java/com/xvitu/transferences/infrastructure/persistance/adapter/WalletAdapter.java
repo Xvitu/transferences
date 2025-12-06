@@ -8,9 +8,9 @@ import org.springframework.stereotype.Component;
 public class WalletAdapter {
     public WalletEntity toEntity(Wallet domainWallet) {
         return new WalletEntity(
-                domainWallet.getId(),
-                domainWallet.getAvailableAmount(),
-                domainWallet.getUserId()
+                domainWallet.id(),
+                domainWallet.availableAmount(),
+                domainWallet.userId()
         );
     }
 

@@ -38,8 +38,8 @@ class WalletAdapterTest {
 
         Wallet domain = adapter.toDomain(entity);
 
-        assertEquals(id, domain.getId());
-        assertEquals(userId, domain.getUserId());
-        assertEquals(amount, domain.getAvailableAmount());
+        assertEquals(id, domain.id());
+        assertEquals(userId, domain.userId());
+        assertEquals(amount, domain.availableAmount());
     }
 }
