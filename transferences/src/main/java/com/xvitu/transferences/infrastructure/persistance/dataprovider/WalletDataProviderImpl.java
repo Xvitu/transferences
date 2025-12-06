@@ -7,7 +7,6 @@ import com.xvitu.transferences.infrastructure.persistance.jpa.entity.WalletEntit
 import com.xvitu.transferences.infrastructure.persistance.jpa.repository.WalletRepository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 public class WalletDataProviderImpl implements WalletDataProvider {
 
