@@ -13,12 +13,12 @@ public class WalletEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID userId;
+    private Integer userId;
 
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal availableAmount;
 
-    public WalletEntity(UUID id, BigDecimal availableAmount, UUID userId) {
+    public WalletEntity(UUID id, BigDecimal availableAmount, Integer userId) {
         this.id = id;
         this.userId = userId;
         this.availableAmount = availableAmount;
@@ -28,11 +28,11 @@ public class WalletEntity {
         return id;
     }
 
-    public UUID getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(UUID userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

@@ -5,8 +5,6 @@ import com.xvitu.transferences.domain.enums.UserType;
 import com.xvitu.transferences.infrastructure.persistance.jpa.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class UserAdapterTest {
@@ -15,7 +13,7 @@ class UserAdapterTest {
 
     @Test
     void shouldMapDomainToEntity() {
-        UUID id = UUID.randomUUID();
+        Integer id = 7;
         User user = new User(
                 id, "John Doe", "12345678900", "john@doe.com", "pass", UserType.CUSTOMER
         );
@@ -32,7 +30,7 @@ class UserAdapterTest {
 
     @Test
     void shouldMapEntityToDomain() {
-        UUID id = UUID.randomUUID();
+        Integer id = 13;
         UserEntity entity = new UserEntity(
                 id, "Mary Jane", "98765432100", "mary@mj.com", "123",UserType.SHOPKEEPER
         );

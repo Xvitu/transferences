@@ -21,17 +21,17 @@ public class TransferenceEntity {
     private TransferenceStatus status;
 
     @Column(nullable = false)
-    private UUID payerId;
+    private Integer payerId;
 
     @Column(nullable = false)
-    private UUID payeeId;
+    private Integer payeeId;
 
     public TransferenceEntity(
             UUID id,
             BigDecimal amount,
             TransferenceStatus status,
-            UUID payerId,
-            UUID payeeId
+            Integer payerId,
+            Integer payeeId
     ) {
         this.id = id;
         this.amount = amount;
@@ -60,19 +60,19 @@ public class TransferenceEntity {
         this.status = status;
     }
 
-    public UUID getPayerId() {
+    public Integer getPayerId() {
         return payerId;
     }
 
-    public void setPayerId(UUID payerId) {
+    public void setPayerId(Integer payerId) {
         this.payerId = payerId;
     }
 
-    public UUID getPayeeId() {
+    public Integer getPayeeId() {
         return payeeId;
     }
 
-    public void setPayeeId(UUID payeeId) {
+    public void setPayeeId(Integer payeeId) {
         this.payeeId = payeeId;
     }
 }

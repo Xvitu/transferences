@@ -22,8 +22,8 @@ class TransferenceAdapterTest {
                 id,
                 new BigDecimal("50.00"),
                 TransferenceStatus.PROCESSING,
-                UUID.randomUUID(),
-                UUID.randomUUID()
+                1,
+                2
         );
 
         TransferenceEntity entity = adapter.toEntity(domain);
@@ -43,8 +43,8 @@ class TransferenceAdapterTest {
                 id,
                 new BigDecimal("99.90"),
                 TransferenceStatus.SUCCESS,
-                UUID.randomUUID(),
-                UUID.randomUUID()
+                3,
+               5
         );
 
         Transference domain = adapter.toDomain(entity);

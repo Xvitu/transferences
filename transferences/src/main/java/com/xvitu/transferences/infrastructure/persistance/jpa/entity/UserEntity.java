@@ -13,7 +13,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue
-    private UUID id;
+    private Integer id;
 
     @Column(nullable = false)
     private String fullName;
@@ -31,7 +31,7 @@ public class UserEntity {
     private UserType type;
 
     public UserEntity(
-          UUID id, String fullName, String document, String email, String password, UserType type
+          Integer id, String fullName, String document, String email, String password, UserType type
     ) {
         this.id = id;
         this.fullName = fullName;
@@ -41,7 +41,7 @@ public class UserEntity {
         this.type = type;
     }
 
-    public UUID getId() {
+    public Integer getId() {
         return id;
     }
 

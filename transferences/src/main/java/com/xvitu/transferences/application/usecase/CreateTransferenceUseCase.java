@@ -32,8 +32,8 @@ public class CreateTransferenceUseCase {
 
     @Transactional
     public Transference execute(TransferCommand command) {
-        UUID payerId = command.payer();
-        UUID payeeId = command.payee();
+        Integer payerId = command.payer();
+        Integer payeeId = command.payee();
 
         // todo - criar custom exceptions
         Transference transference = Transference.pending(command.value(), command.payer(), command.payee());

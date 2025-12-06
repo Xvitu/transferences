@@ -20,8 +20,9 @@ public class UserDataProviderImpl  implements UserDataProvider {
         this.adapter = adapter;
     }
 
+
     @Override
-    public Optional<User> findById(UUID id) {
+    public Optional<User> findById(Integer id) {
         Optional<UserEntity> userEntity = repository.findById(id);
         return userEntity.map(adapter::toDomain);
     }

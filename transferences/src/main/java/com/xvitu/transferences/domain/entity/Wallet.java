@@ -5,10 +5,10 @@ import java.util.UUID;
 
 public class Wallet {
     private final UUID id;
-    private final UUID userId;
+    private final Integer userId;
     private final BigDecimal availableAmount;
 
-    public Wallet(UUID id, UUID userId, BigDecimal availableAmount) {
+    public Wallet(UUID id, Integer userId, BigDecimal availableAmount) {
         this.id = id;
         this.userId = userId;
         this.availableAmount = availableAmount;
@@ -23,7 +23,7 @@ public class Wallet {
         return availableAmount;
     }
 
-    public UUID getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 

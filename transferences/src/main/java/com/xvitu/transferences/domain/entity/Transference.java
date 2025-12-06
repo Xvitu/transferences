@@ -9,10 +9,10 @@ public class Transference {
     private final UUID id;
     private final BigDecimal amount;
     private final TransferenceStatus status;
-    private final UUID payerId;
-    private final UUID payeeId;
+    private final Integer payerId;
+    private final Integer payeeId;
 
-    public Transference(UUID id, BigDecimal amount, TransferenceStatus status, UUID payerId, UUID payeeId) {
+    public Transference(UUID id, BigDecimal amount, TransferenceStatus status, Integer payerId, Integer payeeId) {
         this.id = id;
         this.amount = amount;
         this.status = status;
@@ -32,15 +32,15 @@ public class Transference {
         return id;
     }
 
-    public UUID getPayeeId() {
+    public Integer getPayeeId() {
         return payeeId;
     }
 
-    public UUID getPayerId() {
+    public Integer getPayerId() {
         return payerId;
     }
 
-    public static Transference pending(BigDecimal amount, UUID payerId, UUID payeeId) {
+    public static Transference pending(BigDecimal amount, Integer payerId, Integer payeeId) {
 
         validate(amount, payerId, payeeId);
 
@@ -53,7 +53,7 @@ public class Transference {
         );
     }
 
-    public static void validate(BigDecimal amount, UUID payerId, UUID payeeId) {
+    public static void validate(BigDecimal amount, Integer payerId, Integer payeeId) {
         if (payerId.equals(payeeId)) {
             throw new IllegalArgumentException("Payer and Payee cannot be the same");
         }

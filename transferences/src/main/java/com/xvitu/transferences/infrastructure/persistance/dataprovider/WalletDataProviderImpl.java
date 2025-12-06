@@ -21,7 +21,7 @@ public class WalletDataProviderImpl implements WalletDataProvider {
     }
 
     @Override
-    public Optional<Wallet> findByUserId(UUID userId) {
+    public Optional<Wallet> findByUserId(Integer userId) {
         Optional<WalletEntity> walletEntity = repository.findByUserId(userId);
         return walletEntity.map(adapter::toDomain);
     }

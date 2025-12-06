@@ -16,7 +16,7 @@ class WalletAdapterTest {
     @Test
     void shouldMapDomainToEntity() {
         UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        Integer userId = 2;
         BigDecimal amount = new BigDecimal("150.00");
 
         Wallet domain = new Wallet(id, userId, amount);
@@ -31,7 +31,7 @@ class WalletAdapterTest {
     @Test
     void shouldMapEntityToDomain() {
         UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
+        Integer userId = 1;
         BigDecimal amount = new BigDecimal("200.00");
 
         WalletEntity entity = new WalletEntity(id, amount, userId);
