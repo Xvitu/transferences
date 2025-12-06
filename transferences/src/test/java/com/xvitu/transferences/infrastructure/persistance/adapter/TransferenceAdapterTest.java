@@ -28,11 +28,11 @@ class TransferenceAdapterTest {
 
         TransferenceEntity entity = adapter.toEntity(domain);
 
-        assertEquals(domain.getId(), entity.getId());
-        assertEquals(domain.getAmount(), entity.getAmount());
-        assertEquals(domain.getStatus(), entity.getStatus());
-        assertEquals(domain.getPayerId(), entity.getPayerId());
-        assertEquals(domain.getPayeeId(), entity.getPayeeId());
+        assertEquals(domain.id(), entity.getId());
+        assertEquals(domain.amount(), entity.getAmount());
+        assertEquals(domain.status(), entity.getStatus());
+        assertEquals(domain.payerId(), entity.getPayerId());
+        assertEquals(domain.payeeId(), entity.getPayeeId());
     }
 
     @Test
@@ -49,10 +49,10 @@ class TransferenceAdapterTest {
 
         Transference domain = adapter.toDomain(entity);
 
-        assertEquals(entity.getId(), domain.getId());
-        assertEquals(entity.getAmount(), domain.getAmount());
-        assertEquals(entity.getStatus(), domain.getStatus());
-        assertEquals(entity.getPayerId(), domain.getPayerId());
-        assertEquals(entity.getPayeeId(), domain.getPayeeId());
+        assertEquals(entity.getId(), domain.id());
+        assertEquals(entity.getAmount(), domain.amount());
+        assertEquals(entity.getStatus(), domain.status());
+        assertEquals(entity.getPayerId(), domain.payerId());
+        assertEquals(entity.getPayeeId(), domain.payeeId());
     }
 }
