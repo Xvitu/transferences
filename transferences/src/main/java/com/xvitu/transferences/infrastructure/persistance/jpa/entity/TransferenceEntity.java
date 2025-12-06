@@ -26,6 +26,8 @@ public class TransferenceEntity {
     @Column(nullable = false)
     private Integer payeeId;
 
+    public TransferenceEntity() {}
+
     public TransferenceEntity(
             UUID id,
             BigDecimal amount,

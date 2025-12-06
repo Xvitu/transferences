@@ -27,7 +27,10 @@ public class UserEntity {
     private String password;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private UserType type;
+
+    public UserEntity() {}
 
     public UserEntity(
           Integer id, String fullName, String document, String email, String password, UserType type
