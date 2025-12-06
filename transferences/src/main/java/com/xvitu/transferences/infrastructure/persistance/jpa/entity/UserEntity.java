@@ -2,7 +2,6 @@ package com.xvitu.transferences.infrastructure.persistance.jpa.entity;
 
 import com.xvitu.transferences.domain.enums.UserType;
 import jakarta.persistence.*;
-import java.util.UUID;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {

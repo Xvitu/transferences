@@ -2,8 +2,6 @@ package com.xvitu.transferences.domain.entity;
 
 import com.xvitu.transferences.domain.enums.UserType;
 
-import java.util.UUID;
-
 public class User {
     private final Integer id;
     private final String fullName;

@@ -5,5 +5,5 @@ import com.xvitu.transferences.domain.entity.User;
 import java.util.Optional;
 
 public interface UserDataProvider {
-    public Optional<User> findById(Integer id);
+    Optional<User> findById(Integer id);
 }
