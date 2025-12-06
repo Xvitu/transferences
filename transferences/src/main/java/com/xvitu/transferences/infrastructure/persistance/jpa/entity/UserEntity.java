@@ -1,4 +1,4 @@
-package com.xvitu.transferences.infrastructure.entity;
+package com.xvitu.transferences.infrastructure.persistance.jpa.entity;
 
 import jakarta.persistence.*;
 import java.util.UUID;
@@ -8,7 +8,7 @@ import java.util.UUID;
     @UniqueConstraint(name = "uk_user_document", columnNames = "document"),
     @UniqueConstraint(name = "uk_user_email", columnNames = "email")
 })
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue
@@ -26,7 +26,10 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    public User(String fullName, String document, String email, String password) {
+    public UserEntity(
+          UUID id, String fullName, String document, String email, String password
+    ) {
+        this.id = id;
         this.fullName = fullName;
         this.document = document;
         this.email = email;

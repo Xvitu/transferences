@@ -1,4 +1,4 @@
-package com.xvitu.transferences.infrastructure.entity;
+package com.xvitu.transferences.infrastructure.persistance.jpa.entity;
 
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -6,7 +6,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "wallets")
-public class Wallet {
+public class WalletEntity {
 
     @Id
     @GeneratedValue
@@ -18,7 +18,8 @@ public class Wallet {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal availableAmount;
 
-    public Wallet(UUID userId, BigDecimal availableAmount) {
+    public WalletEntity(UUID id, BigDecimal availableAmount, UUID userId) {
+        this.id = id;
         this.userId = userId;
         this.availableAmount = availableAmount;
     }

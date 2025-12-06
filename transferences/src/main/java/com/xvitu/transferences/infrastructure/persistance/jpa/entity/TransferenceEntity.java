@@ -1,4 +1,4 @@
-package com.xvitu.transferences.infrastructure.entity;
+package com.xvitu.transferences.infrastructure.persistance.jpa.entity;
 
 import com.xvitu.transferences.domain.enums.TransferenceStatus;
 import jakarta.persistence.*;
@@ -8,10 +8,9 @@ import java.util.UUID;
 @Entity
 @Table(name = "transferences")
 // todo - flyway
-public class Transference {
+public class TransferenceEntity {
 
     @Id
-    @GeneratedValue
     private UUID id;
 
     @Column(nullable = false, precision = 19, scale = 2)
@@ -27,7 +26,14 @@ public class Transference {
     @Column(nullable = false)
     private UUID payeeId;
 
-    public Transference(BigDecimal amount, TransferenceStatus status, UUID payerId, UUID payeeId) {
+    public TransferenceEntity(
+            UUID id,
+            BigDecimal amount,
+            TransferenceStatus status,
+            UUID payerId,
+            UUID payeeId
+    ) {
+        this.id = id;
         this.amount = amount;
         this.status = status;
         this.payerId = payerId;
