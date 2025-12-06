@@ -1,6 +1,9 @@
 package com.xvitu.transferences.application.usecase;
 
 import com.xvitu.transferences.application.command.TransferCommand;
+import com.xvitu.transferences.application.exception.InvalidPayerTypeException;
+import com.xvitu.transferences.application.exception.UserNotFoundException;
+import com.xvitu.transferences.application.exception.UserWalletNotFoundException;
 import com.xvitu.transferences.domain.dataprovider.TransferenceDataProvider;
 import com.xvitu.transferences.domain.dataprovider.UserDataProvider;
 import com.xvitu.transferences.domain.dataprovider.WalletDataProvider;
@@ -9,9 +12,6 @@ import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.domain.entity.Wallet;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.UUID;
 
 @Component
 public class CreateTransferenceUseCase {
@@ -35,31 +35,25 @@ public class CreateTransferenceUseCase {
         Integer payerId = command.payer();
         Integer payeeId = command.payee();
 
-        // todo - criar custom exceptions
-        Transference transference = Transference.pending(command.value(), command.payer(), command.payee());
+        User payer = userDataProvider.findById(payerId).orElseThrow(() -> new UserNotFoundException(payerId));
 
-        User payer = userDataProvider.findById(payerId).orElseThrow(
-            () -> new RuntimeException(String.format("Payer %s not found!", payerId))
-        );
-
-        userDataProvider.findById(payeeId).orElseThrow(
-                () -> new RuntimeException(String.format("Payee %s not found!", payeeId))
-        );
+        userDataProvider.findById(payeeId).orElseThrow(() -> new UserNotFoundException(payeeId));
 
         if(payer.isShopKeeper()) {
-            throw  new RuntimeException("Payer user can not be of shopkeeper type");
+            throw  new InvalidPayerTypeException(payer.getType());
         }
 
         Wallet payerWallet = walletDataProvider.findByUserId(payerId).orElseThrow(
-                () -> new RuntimeException(String.format("Payer %s has no wallet!", payerId))
+                () -> new UserWalletNotFoundException(payerId)
         );
 
         walletDataProvider.findByUserId(payeeId).orElseThrow(
-                () -> new RuntimeException(String.format("Payee %s has no wallet!", payeeId))
+                () -> new UserWalletNotFoundException(payeeId)
         );
 
         payerWallet.ensureHasFunds(command.value());
 
+        Transference transference = Transference.pending(command.value(), command.payer(), command.payee());
         transferenceDataProvider.save(transference);
 
         // todo - publica na fila
