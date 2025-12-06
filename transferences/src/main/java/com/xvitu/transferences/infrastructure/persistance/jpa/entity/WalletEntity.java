@@ -18,6 +18,8 @@ public class WalletEntity {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal availableAmount;
 
+    public WalletEntity() {}
+
     public WalletEntity(UUID id, BigDecimal availableAmount, Integer userId) {
         this.id = id;
         this.userId = userId;
