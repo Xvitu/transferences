@@ -1,6 +1,7 @@
 package com.xvitu.transferences.infrastructure.persistance.adapter;
 
 import com.xvitu.transferences.domain.entity.User;
+import com.xvitu.transferences.domain.enums.UserType;
 import com.xvitu.transferences.infrastructure.persistance.jpa.entity.UserEntity;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +16,9 @@ class UserAdapterTest {
     @Test
     void shouldMapDomainToEntity() {
         UUID id = UUID.randomUUID();
-        User user = new User(id, "John Doe", "12345678900", "john@doe.com", "pass");
+        User user = new User(
+                id, "John Doe", "12345678900", "john@doe.com", "pass", UserType.CUSTOMER
+        );
 
         UserEntity entity = adapter.toEntity(user);
 
@@ -24,12 +27,15 @@ class UserAdapterTest {
         assertEquals("12345678900", entity.getDocument());
         assertEquals("john@doe.com", entity.getEmail());
         assertEquals("pass", entity.getPassword());
+        assertEquals(UserType.CUSTOMER, entity.getType());
     }
 
     @Test
     void shouldMapEntityToDomain() {
         UUID id = UUID.randomUUID();
-        UserEntity entity = new UserEntity(id, "Mary Jane", "98765432100", "mary@mj.com", "123");
+        UserEntity entity = new UserEntity(
+                id, "Mary Jane", "98765432100", "mary@mj.com", "123",UserType.SHOPKEEPER
+        );
 
         User user = adapter.toDomain(entity);
 
@@ -38,5 +44,6 @@ class UserAdapterTest {
         assertEquals("98765432100", user.getDocument());
         assertEquals("mary@mj.com", user.getEmail());
         assertEquals("123", user.getPassword());
+        assertEquals(UserType.SHOPKEEPER, entity.getType());
     }
 }
