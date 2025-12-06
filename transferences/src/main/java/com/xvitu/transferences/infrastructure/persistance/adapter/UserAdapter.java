@@ -2,7 +2,9 @@ package com.xvitu.transferences.infrastructure.persistance.adapter;
 
 import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.infrastructure.persistance.jpa.entity.UserEntity;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserAdapter {
     public UserEntity toEntity(User domainUser) {
         return new UserEntity(
