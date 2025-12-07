@@ -9,18 +9,22 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfig {
 
     public static final String MAIN_EXCHANGE = "transference.exchange";
-    public static final String MAIN_QUEUE = "transference.queue";
-    public static final String MAIN_ROUTING_KEY = "transference.key";
+
+    public static final String TRANSFERENCE_QUEUE = "transference.queue";
+    public static final String TRANSFERENCE_ROUTING_KEY = "transference.key";
+
+    public static final String NOTIFICATION_QUEUE = "notification.queue";
+    public static final String NOTIFICATION_ROUTING_KEY = "notification.key";
 
     @Bean
     public JacksonJsonMessageConverter jsonMessageConverter() {
         return new JacksonJsonMessageConverter();
     }
 
-    // Main Queue
+    // Transference Queue
     @Bean
-    public Queue mainQueue() {
-        return QueueBuilder.durable(MAIN_QUEUE).build();
+    public Queue transferenceQueue() {
+        return QueueBuilder.durable(TRANSFERENCE_QUEUE).build();
     }
 
     @Bean
@@ -29,9 +33,22 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Binding mainBinding() {
-        return BindingBuilder.bind(mainQueue())
+    public Binding transferenceBinding() {
+        return BindingBuilder.bind(transferenceQueue())
                 .to(mainExchange())
-                .with(MAIN_ROUTING_KEY);
+                .with(TRANSFERENCE_ROUTING_KEY);
+    }
+
+    // Notification queue
+    @Bean
+    public Queue notificationQueue() {
+        return QueueBuilder.durable(NOTIFICATION_QUEUE).build();
+    }
+
+    @Bean
+    public Binding notificationBinding() {
+        return BindingBuilder.bind(notificationQueue())
+                .to(mainExchange()) // usando o mesmo exchange
+                .with(NOTIFICATION_ROUTING_KEY);
     }
 }

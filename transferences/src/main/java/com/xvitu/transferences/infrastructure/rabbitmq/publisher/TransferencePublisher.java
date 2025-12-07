@@ -16,7 +16,7 @@ public class TransferencePublisher {
     public void publish(TransferEvent event) {
         rabbitTemplate.convertAndSend(
                 RabbitConfig.MAIN_EXCHANGE,
-                RabbitConfig.MAIN_ROUTING_KEY,
+                RabbitConfig.TRANSFERENCE_ROUTING_KEY,
                 event
         );
     }
