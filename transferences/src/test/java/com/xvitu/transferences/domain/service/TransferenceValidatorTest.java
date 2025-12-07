@@ -9,6 +9,7 @@ import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.domain.entity.Wallet;
 import com.xvitu.transferences.domain.enums.UserType;
 import com.xvitu.transferences.domain.exception.InsufficientFundsException;
+import com.xvitu.transferences.domain.vo.ValidatedTransference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -56,11 +57,15 @@ class TransferenceValidatorTest {
         when(userDataProvider.findById(PAYER_ID)).thenReturn(Optional.of(customerPayer));
         when(userDataProvider.findById(PAYEE_ID)).thenReturn(Optional.of(shopkeeperPayee));
         when(walletDataProvider.findByUserId(PAYER_ID)).thenReturn(Optional.of(payerWallet));
-        when(walletDataProvider.findByUserId(PAYEE_ID)).thenReturn(Optional.of(new Wallet(UUID.randomUUID(), PAYEE_ID, BigDecimal.ZERO)));
+        Wallet payeeWallet = new Wallet(UUID.randomUUID(), PAYEE_ID, BigDecimal.ZERO);
+        when(walletDataProvider.findByUserId(PAYEE_ID)).thenReturn(Optional.of(payeeWallet));
 
         doNothing().when(payerWallet).ensureHasFunds(AMOUNT);
 
-        assertDoesNotThrow(() -> validator.validate(PAYER_ID, PAYEE_ID, AMOUNT));
+        ValidatedTransference validatedTransference = validator.validate(PAYER_ID, PAYEE_ID, AMOUNT);
+
+        assertEquals(payerWallet, validatedTransference.payeerWallet());
+        assertEquals(payeeWallet, validatedTransference.payeeWallet());
 
         verify(userDataProvider, times(1)).findById(PAYER_ID);
         verify(userDataProvider, times(1)).findById(PAYEE_ID);

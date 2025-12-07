@@ -7,6 +7,7 @@ import com.xvitu.transferences.domain.dataprovider.UserDataProvider;
 import com.xvitu.transferences.domain.dataprovider.WalletDataProvider;
 import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.domain.entity.Wallet;
+import com.xvitu.transferences.domain.vo.ValidatedTransference;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -24,7 +25,7 @@ public class TransferenceValidator {
         this.walletDataProvider = walletDataProvider;
     }
 
-    public void validate(Integer payerId, Integer payeeId, BigDecimal amount) {
+    public ValidatedTransference validate(Integer payerId, Integer payeeId, BigDecimal amount) {
         User payer = userDataProvider.findById(payerId).orElseThrow(() -> new UserNotFoundException(payerId));
 
         userDataProvider.findById(payeeId).orElseThrow(() -> new UserNotFoundException(payeeId));
@@ -37,11 +38,13 @@ public class TransferenceValidator {
                 () -> new UserWalletNotFoundException(payerId)
         );
 
-        walletDataProvider.findByUserId(payeeId).orElseThrow(
+        Wallet payeeWallet = walletDataProvider.findByUserId(payeeId).orElseThrow(
                 () -> new UserWalletNotFoundException(payeeId)
         );
 
         payerWallet.ensureHasFunds(amount);
+
+        return new ValidatedTransference(payerWallet, payeeWallet);
     }
 
 }

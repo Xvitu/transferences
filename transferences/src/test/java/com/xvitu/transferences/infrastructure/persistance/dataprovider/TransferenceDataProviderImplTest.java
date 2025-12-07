@@ -58,7 +58,6 @@ class TransferenceDataProviderImplTest {
 
     @Test
     void findById_ShouldReturnTransference_WhenEntityExists() {
-        // Mock repository e adapter
         when(repository.findById(transferenceId)).thenReturn(Optional.of(entity));
         when(adapter.toDomain(entity)).thenReturn(domain);
 
