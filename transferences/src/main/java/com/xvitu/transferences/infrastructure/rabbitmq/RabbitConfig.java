@@ -48,7 +48,7 @@ public class RabbitConfig {
     @Bean
     public Binding notificationBinding() {
         return BindingBuilder.bind(notificationQueue())
-                .to(mainExchange()) // usando o mesmo exchange
+                .to(mainExchange())
                 .with(NOTIFICATION_ROUTING_KEY);
     }
 }
