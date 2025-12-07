@@ -62,17 +62,17 @@ public class CreateTransferenceUseCase {
         Transference transference = Transference.pending(command.value(), command.payer(), command.payee());
         transferenceDataProvider.save(transference);
 
-        publishEvent(command);
+        publishEvent(command, transference.id());
 
         // todo - usar outbox
 
         return transference;
     }
 
-    private void publishEvent(TransferCommand command) {
+    private void publishEvent(TransferCommand command, UUID transferenceId) {
         transferencePublisher.publish(
                 new TransferEvent(
-                        UUID.randomUUID().toString(), command.payer(), command.payee(), command.value()
+                        transferenceId.toString(), command.payer(), command.payee(), command.value()
                 )
         );
     }

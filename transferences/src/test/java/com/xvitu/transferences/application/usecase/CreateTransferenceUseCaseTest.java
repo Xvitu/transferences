@@ -13,9 +13,12 @@ import com.xvitu.transferences.domain.entity.Wallet;
 import com.xvitu.transferences.domain.enums.TransferenceStatus;
 import com.xvitu.transferences.domain.enums.UserType;
 import com.xvitu.transferences.domain.exception.InsufficientFundsException;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.TransferEvent;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.TransferencePublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,6 +41,8 @@ class CreateTransferenceUseCaseTest {
     private TransferenceDataProvider transferenceDataProvider;
     @Mock
     private Wallet payerWallet;
+    @Mock
+    private TransferencePublisher publisher;
 
     @InjectMocks
     private CreateTransferenceUseCase createTransferenceUseCase;
@@ -65,6 +70,9 @@ class CreateTransferenceUseCaseTest {
         when(walletDataProvider.findByUserId(PAYER_ID)).thenReturn(Optional.of(payerWallet));
         when(walletDataProvider.findByUserId(PAYEE_ID)).thenReturn(Optional.of(new Wallet(UUID.randomUUID(), PAYEE_ID, new BigDecimal("0.00"))));
 
+        ArgumentCaptor<TransferEvent> transferEventArgumentCaptor = ArgumentCaptor.forClass(TransferEvent.class);
+        doNothing().when(publisher).publish(transferEventArgumentCaptor.capture());
+
         doNothing().when(payerWallet).ensureHasFunds(TRANSFER_VALUE);
 
         doNothing().when(transferenceDataProvider).save(any(Transference.class));
@@ -77,12 +85,18 @@ class CreateTransferenceUseCaseTest {
         assertEquals(PAYEE_ID, result.payeeId());
         assertEquals(TransferenceStatus.PENDING, result.status());
 
+        TransferEvent capturedEvent = transferEventArgumentCaptor.getValue();
+        assertEquals(PAYEE_ID, capturedEvent.payeeId());
+        assertEquals(PAYER_ID, capturedEvent.payerId());
+        assertEquals(TRANSFER_VALUE, capturedEvent.amount());
+
         verify(userDataProvider, times(1)).findById(PAYER_ID);
         verify(userDataProvider, times(1)).findById(PAYEE_ID);
         verify(walletDataProvider, times(1)).findByUserId(PAYER_ID);
         verify(walletDataProvider, times(1)).findByUserId(PAYEE_ID);
         verify(payerWallet, times(1)).ensureHasFunds(TRANSFER_VALUE);
         verify(transferenceDataProvider, times(1)).save(any(Transference.class));
+        verify(publisher, times(1)).publish(any(TransferEvent.class));
     }
 
     @Test
