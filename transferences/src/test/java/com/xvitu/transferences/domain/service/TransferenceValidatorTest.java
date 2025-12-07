@@ -66,6 +66,9 @@ class TransferenceValidatorTest {
 
         assertEquals(payerWallet, validatedTransference.payeerWallet());
         assertEquals(payeeWallet, validatedTransference.payeeWallet());
+        assertEquals(customerPayer, validatedTransference.payer());
+        assertEquals(shopkeeperPayee, validatedTransference.payee());
+
 
         verify(userDataProvider, times(1)).findById(PAYER_ID);
         verify(userDataProvider, times(1)).findById(PAYEE_ID);

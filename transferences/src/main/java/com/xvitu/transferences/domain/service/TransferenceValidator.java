@@ -28,7 +28,7 @@ public class TransferenceValidator {
     public ValidatedTransference validate(Integer payerId, Integer payeeId, BigDecimal amount) {
         User payer = userDataProvider.findById(payerId).orElseThrow(() -> new UserNotFoundException(payerId));
 
-        userDataProvider.findById(payeeId).orElseThrow(() -> new UserNotFoundException(payeeId));
+        User payee = userDataProvider.findById(payeeId).orElseThrow(() -> new UserNotFoundException(payeeId));
 
         if(payer.isShopKeeper()) {
             throw  new InvalidPayerTypeException(payer.getType());
@@ -44,7 +44,7 @@ public class TransferenceValidator {
 
         payerWallet.ensureHasFunds(amount);
 
-        return new ValidatedTransference(payerWallet, payeeWallet);
+        return new ValidatedTransference(payerWallet, payeeWallet, payer, payee);
     }
 
 }
