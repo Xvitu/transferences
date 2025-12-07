@@ -58,8 +58,8 @@ A aplicação utiliza um conjunto de dependências do ecossistema Spring e bibli
 ├── 📁 src
 │   ├── 📁 main
 │   │   └── 📁 java
-│   │       ├── 🧠 domain -> Contém as regras de negócio e entidades (ex: cálculo de imposto).
-│   │       ├── 🚀 application -> Orquestra as operações (o fluxo de cálculo).
+│   │       ├── 🧠 domain -> Contém as regras de negócio e entidades (ex: validações do valor da transferência).
+│   │       ├── 🚀 application -> Orquestra as operações (o fluxo de transferência).
 │   │       ├── 🪟 boundary -> Interface de entrada/saída (recebe o JSON, entrega o resultado).
 │   │       └── 🏗️ infrastructure -> Implementações externas (como a serialização e persistência de dados).
 │   └── 📁 test
