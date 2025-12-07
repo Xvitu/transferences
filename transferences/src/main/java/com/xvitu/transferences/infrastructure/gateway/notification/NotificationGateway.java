@@ -1,11 +1,12 @@
 package com.xvitu.transferences.infrastructure.gateway.notification;
 
+import com.xvitu.transferences.infrastructure.gateway.notification.request.NotificationRequest;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.springframework.stereotype.Component;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class NotificationGateway {
@@ -19,9 +20,12 @@ public class NotificationGateway {
 
     @Retry(name = "notificationRetry")
     @TimeLimiter(name = "notificationTimeLimiter")
-    public Mono<Void> notificate() {
+    public CompletableFuture<Void> notificate(NotificationRequest request) {
         return webClient.post()
                 .uri("/notify")
-                .exchangeToMono(ClientResponse::releaseBody);
+                .bodyValue(request)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .toFuture();
     }
 }
