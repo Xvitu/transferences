@@ -38,8 +38,16 @@ resilience4j:
       authorizationRetry:
         maxAttempts: 3
         waitDuration: 2s
+      notificationRetry:
+        maxAttempts: 3
+        waitDuration: 2s
+        enableExponentialBackoff: true
+        exponentialBackoffMultiplier: 2
+        maxWaitDuration: 10s
 
   timelimiter:
     instances:
       authorizationTimeLimiter:
+        timeoutDuration: 3s
+      notificationTimeLimiter:
         timeoutDuration: 3s
