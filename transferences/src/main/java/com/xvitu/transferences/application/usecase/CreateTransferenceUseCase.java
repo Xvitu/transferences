@@ -40,8 +40,6 @@ public class CreateTransferenceUseCase {
 
         publishEvent(command, transference.id());
 
-        // todo - usar outbox
-
         return transference;
     }
 
