@@ -26,4 +26,10 @@ public class WalletDataProviderImpl implements WalletDataProvider {
         Optional<WalletEntity> walletEntity = repository.findByUserId(userId);
         return walletEntity.map(adapter::toDomain);
     }
+
+    @Override
+    public void save(Wallet wallet) {
+        WalletEntity walletEntity = adapter.toEntity(wallet);
+        repository.save(walletEntity);
+    }
 }

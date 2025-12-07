@@ -57,4 +57,15 @@ class WalletDataProviderImplTest {
         verify(repository, times(1)).findByUserId(USER_ID);
         verify(adapter, never()).toDomain(any(WalletEntity.class));
     }
+
+    @Test
+    void save_ShouldConvertAndSaveTransferenceSuccessfully() {
+        when(adapter.toEntity(mockWallet)).thenReturn(mockEntity);
+        when(repository.save(mockEntity)).thenReturn(mockEntity);
+
+        dataProvider.save(mockWallet);
+
+        verify(adapter, times(1)).toEntity(mockWallet);
+        verify(repository, times(1)).save(mockEntity);
+    }
 }

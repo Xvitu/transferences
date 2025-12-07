@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface WalletDataProvider {
     Optional<Wallet> findByUserId(Integer userId);
+    void save(Wallet wallet);
 }
