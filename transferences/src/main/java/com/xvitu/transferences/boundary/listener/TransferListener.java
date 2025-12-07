@@ -24,7 +24,7 @@ public class TransferListener {
 
     @RabbitListener(queues = RabbitConfig.TRANSFERENCE_QUEUE)
     public void consume(TransferEvent event) {
-        logger.info("Received new message {}", event.eventId());
+        logger.info("Received new message in transference queue {}", event.eventId());
 
         TransferCommand command = new TransferCommand(
                 UUID.fromString(event.eventId()), event.payerId(), event.payeeId(), event.amount()
