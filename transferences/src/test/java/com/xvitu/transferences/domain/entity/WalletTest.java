@@ -49,4 +49,38 @@ class WalletTest {
 
         assertDoesNotThrow(() -> wallet.ensureHasFunds(transferValue));
     }
+
+    @Test
+    void deposit_ShouldIncreaseAvailableAmount() {
+        UUID walletId = UUID.randomUUID();
+        Integer userId = 1;
+        BigDecimal initialAmount = new BigDecimal("100.00");
+        Wallet wallet = new Wallet(walletId, userId, initialAmount);
+
+        BigDecimal depositAmount = new BigDecimal("50.00");
+        Wallet updatedWallet = wallet.deposit(depositAmount);
+
+        assertEquals(new BigDecimal("150.00"), updatedWallet.availableAmount());
+        assertEquals(walletId, updatedWallet.id());
+        assertEquals(userId, updatedWallet.userId());
+
+        assertEquals(initialAmount, wallet.availableAmount());
+    }
+
+    @Test
+    void withdraw_ShouldDecreaseAvailableAmount() {
+        UUID walletId = UUID.randomUUID();
+        Integer userId = 1;
+        BigDecimal initialAmount = new BigDecimal("100.00");
+        Wallet wallet = new Wallet(walletId, userId, initialAmount);
+
+        BigDecimal withdrawAmount = new BigDecimal("30.00");
+        Wallet updatedWallet = wallet.withdraw(withdrawAmount);
+
+        assertEquals(new BigDecimal("70.00"), updatedWallet.availableAmount());
+        assertEquals(walletId, updatedWallet.id());
+        assertEquals(userId, updatedWallet.userId());
+
+        assertEquals(initialAmount, wallet.availableAmount());
+    }
 }
