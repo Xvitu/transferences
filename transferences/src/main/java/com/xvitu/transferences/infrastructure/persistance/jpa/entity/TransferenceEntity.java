@@ -7,7 +7,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "transferences")
-// todo - flyway
 public class TransferenceEntity {
 
     @Id
