@@ -3,7 +3,6 @@ package com.xvitu.transferences.boundary.listener;
 import com.xvitu.transferences.application.command.TransferCommand;
 import com.xvitu.transferences.application.usecase.TransferUseCase;
 import com.xvitu.transferences.infrastructure.rabbitmq.publisher.TransferEvent;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
