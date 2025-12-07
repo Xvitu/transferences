@@ -16,11 +16,8 @@ import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationEve
 import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationPublisher;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Component
 public class TransferUseCase {
