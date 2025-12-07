@@ -21,6 +21,14 @@ public record Transference(UUID id, BigDecimal amount, TransferenceStatus status
         );
     }
 
+    public Transference fail() {
+        return new Transference(id, amount, TransferenceStatus.FAILED, payerId, payeeId);
+    }
+
+    public Transference success() {
+        return new Transference(id, amount, TransferenceStatus.SUCCESS, payerId, payeeId);
+    }
+
     public static void validate(BigDecimal amount, Integer payerId, Integer payeeId) {
         if (payerId.equals(payeeId)) {
             throw new InvalidTransferenceException("Payer and Payee cannot be the same");
