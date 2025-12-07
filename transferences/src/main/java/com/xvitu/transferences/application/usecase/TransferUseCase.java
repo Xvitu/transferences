@@ -15,6 +15,8 @@ import com.xvitu.transferences.infrastructure.gateway.authorization.response.Aut
 import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationEvent;
 import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationPublisher;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -26,6 +28,8 @@ public class TransferUseCase {
     private final AuthorizationGateway authorizationGateway;
     private final WalletDataProvider walletDataProvider;
     private final NotificationPublisher notificationPublisher;
+
+    private static final Logger logger = LoggerFactory.getLogger(TransferUseCase.class);
 
     public TransferUseCase(
             TransferenceDataProvider transferenceDataProvider,
@@ -54,19 +58,26 @@ public class TransferUseCase {
 
         AuthorizationResponse response = authorizationGateway.get().block();
 
-        Wallet updatedPayer = validated.payeerWallet().withdraw(transference.amount());
+        Transference updatedTransference = response.data().authorization() ?
+                processAuthorizedTransference(transference, validated) :
+                transference.fail();
+
+        transferenceDataProvider.save(updatedTransference);
+
+        logger.info("Transference finished {} {}", command.transferenceId(), updatedTransference.status());
+
+        notifyUser(updatedTransference, validated.payer(), validated.payee());
+    }
+
+    private Transference processAuthorizedTransference(Transference transference, ValidatedTransference validatedTransference) {
+        Transference updated = transference.success();
+        Wallet updatedPayer = validatedTransference.payeerWallet().withdraw(transference.amount());
         walletDataProvider.save(updatedPayer);
 
-        Wallet updatedPayee = validated.payeeWallet().deposit(transference.amount());
+        Wallet updatedPayee = validatedTransference.payeeWallet().deposit(transference.amount());
         walletDataProvider.save(updatedPayee);
 
-        Transference updated = response.data().authorization()
-                ? transference.success()
-                : transference.fail();
-
-        transferenceDataProvider.save(updated);
-
-        notifyUser(updated, validated.payer(), validated.payee());
+        return updated;
     }
 
     private void notifyUser(Transference transference, User payer, User payee) {
@@ -84,5 +95,6 @@ public class TransferUseCase {
         }
 
         notificationEvents.forEach(notificationPublisher::publish);
+        logger.info("Notification sent to queue {}", transference.id());
     }
 }

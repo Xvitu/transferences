@@ -115,10 +115,10 @@ class TransferUseCaseTest {
         NotificationEvent second = notifyCaptor.getAllValues().get(1);
 
         assertEquals(payer.getEmail(), first.email());
-        assertEquals(NotificationEventEnum.TRANSFERENCE_SEND, first.event());
+        assertEquals(NotificationEventEnum.TRANSFERENCE_SEND.toString(), first.event());
 
         assertEquals(payee.getEmail(), second.email());
-        assertEquals(NotificationEventEnum.TRANSFERENCE_RECEIVED, second.event());
+        assertEquals(NotificationEventEnum.TRANSFERENCE_RECEIVED.toString(), second.event());
     }
 
     @Test
@@ -127,29 +127,16 @@ class TransferUseCaseTest {
         when(authorizationGateway.get()).thenReturn(Mono.just(new AuthorizationResponse("fail", authData)));
 
         ValidatedTransference validated = mock(ValidatedTransference.class);
-        Wallet payerWallet = mock(Wallet.class);
-        Wallet updatedPayerWallet = mock(Wallet.class);
-        Wallet payeeWallet = mock(Wallet.class);
-        Wallet updatedPayeeWallet = mock(Wallet.class);
         User payer = mock(User.class);
         User payee = mock(User.class);
 
         when(validator.validate(PAYER_ID, PAYEE_ID, AMOUNT)).thenReturn(validated);
-        when(validated.payeerWallet()).thenReturn(payerWallet);
-        when(validated.payeeWallet()).thenReturn(payeeWallet);
         when(validated.payer()).thenReturn(payer);
         when(validated.payee()).thenReturn(payee);
 
-        when(validated.payeerWallet()).thenReturn(payerWallet);
-        when(validated.payeeWallet()).thenReturn(payeeWallet);
-
-        when(payerWallet.withdraw(any())).thenReturn(updatedPayerWallet);
-        when(payeeWallet.deposit(any())).thenReturn(updatedPayeeWallet);
-
         useCase.execute(command);
 
-        verify(walletDataProvider).save(updatedPayerWallet);
-        verify(walletDataProvider).save(updatedPayeeWallet);
+        verify(walletDataProvider, times(0)).save(any());
 
         ArgumentCaptor<Transference> transferenceCaptor = ArgumentCaptor.forClass(Transference.class);
         verify(transferenceDataProvider, times(1)).save(transferenceCaptor.capture());
@@ -162,7 +149,7 @@ class TransferUseCaseTest {
 
         NotificationEvent event = notifyCaptor.getValue();
         assertEquals(payer.getEmail(), event.email());
-        assertEquals(NotificationEventEnum.TRANSFERENCE_FAILED, event.event());
+        assertEquals(NotificationEventEnum.TRANSFERENCE_FAILED.toString(), event.event());
     }
 
     @Test
