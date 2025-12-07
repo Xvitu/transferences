@@ -5,12 +5,16 @@ import com.xvitu.transferences.application.exception.TransferenceNotFoundExcepti
 import com.xvitu.transferences.domain.dataprovider.TransferenceDataProvider;
 import com.xvitu.transferences.domain.dataprovider.WalletDataProvider;
 import com.xvitu.transferences.domain.entity.Transference;
+import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.domain.entity.Wallet;
+import com.xvitu.transferences.domain.enums.NotificationEventEnum;
 import com.xvitu.transferences.domain.service.TransferenceValidator;
 import com.xvitu.transferences.domain.vo.ValidatedTransference;
 import com.xvitu.transferences.infrastructure.gateway.authorization.AuthorizationGateway;
-import com.xvitu.transferences.infrastructure.gateway.authorization.response.AuthorizationData;
 import com.xvitu.transferences.infrastructure.gateway.authorization.response.AuthorizationResponse;
+import com.xvitu.transferences.infrastructure.gateway.authorization.response.AuthorizationData;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationEvent;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationPublisher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,6 +47,9 @@ class TransferUseCaseTest {
     @Mock
     private WalletDataProvider walletDataProvider;
 
+    @Mock
+    private NotificationPublisher notificationPublisher;
+
     @InjectMocks
     private TransferUseCase useCase;
 
@@ -64,45 +71,98 @@ class TransferUseCaseTest {
     }
 
     @Test
-    void execute_ShouldUpdateTransferenceToSuccess_WhenAuthorizationPasses() {
+    void execute_ShouldUpdateTransferenceToSuccess_AndAdjustWallets_AndNotify_WhenAuthorizationPasses() {
         AuthorizationData authData = new AuthorizationData(true);
         when(authorizationGateway.get()).thenReturn(Mono.just(new AuthorizationResponse("success", authData)));
 
         ValidatedTransference validated = mock(ValidatedTransference.class);
-        when(validator.validate(PAYER_ID, PAYEE_ID, AMOUNT)).thenReturn(validated);
+        Wallet payerWallet = mock(Wallet.class);
+        Wallet updatedPayerWallet = mock(Wallet.class);
+        Wallet payeeWallet = mock(Wallet.class);
+        Wallet updatedPayeeWallet = mock(Wallet.class);
+        User payer = mock(User.class);
+        User payee = mock(User.class);
 
-        when(validated.payeerWallet()).thenReturn(mock(Wallet.class));
-        when(validated.payeeWallet()).thenReturn(mock(Wallet.class));
+        when(validator.validate(PAYER_ID, PAYEE_ID, AMOUNT)).thenReturn(validated);
+        when(validated.payeerWallet()).thenReturn(payerWallet);
+        when(validated.payeeWallet()).thenReturn(payeeWallet);
+        when(validated.payer()).thenReturn(payer);
+        when(validated.payee()).thenReturn(payee);
+
+        when(validated.payeerWallet()).thenReturn(payerWallet);
+        when(validated.payeeWallet()).thenReturn(payeeWallet);
+
+        when(payerWallet.withdraw(any())).thenReturn(updatedPayerWallet);
+        when(payeeWallet.deposit(any())).thenReturn(updatedPayeeWallet);
 
         useCase.execute(command);
 
+        verify(walletDataProvider).save(updatedPayerWallet);
+        verify(walletDataProvider).save(updatedPayeeWallet);
+
         verify(validator, times(1)).validate(PAYER_ID, PAYEE_ID, AMOUNT);
 
-        // Captura transference salva
         ArgumentCaptor<Transference> transferenceCaptor = ArgumentCaptor.forClass(Transference.class);
         verify(transferenceDataProvider, times(1)).save(transferenceCaptor.capture());
 
         Transference saved = transferenceCaptor.getValue();
         assertEquals(pendingTransference.success().status(), saved.status());
+
+        ArgumentCaptor<NotificationEvent> notifyCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
+        verify(notificationPublisher, times(2)).publish(notifyCaptor.capture());
+
+        NotificationEvent first = notifyCaptor.getAllValues().get(0);
+        NotificationEvent second = notifyCaptor.getAllValues().get(1);
+
+        assertEquals(payer.getEmail(), first.email());
+        assertEquals(NotificationEventEnum.TRANSFERENCE_SEND, first.event());
+
+        assertEquals(payee.getEmail(), second.email());
+        assertEquals(NotificationEventEnum.TRANSFERENCE_RECEIVED, second.event());
     }
 
     @Test
-    void execute_ShouldUpdateTransferenceToFail_WhenAuthorizationFails() {
+    void execute_ShouldUpdateTransferenceToFail_AndAdjustWallets_AndNotify_WhenAuthorizationFails() {
         AuthorizationData authData = new AuthorizationData(false);
         when(authorizationGateway.get()).thenReturn(Mono.just(new AuthorizationResponse("fail", authData)));
 
         ValidatedTransference validated = mock(ValidatedTransference.class);
+        Wallet payerWallet = mock(Wallet.class);
+        Wallet updatedPayerWallet = mock(Wallet.class);
+        Wallet payeeWallet = mock(Wallet.class);
+        Wallet updatedPayeeWallet = mock(Wallet.class);
+        User payer = mock(User.class);
+        User payee = mock(User.class);
+
         when(validator.validate(PAYER_ID, PAYEE_ID, AMOUNT)).thenReturn(validated);
-        when(validated.payeerWallet()).thenReturn(mock(Wallet.class));
-        when(validated.payeeWallet()).thenReturn(mock(Wallet.class));
+        when(validated.payeerWallet()).thenReturn(payerWallet);
+        when(validated.payeeWallet()).thenReturn(payeeWallet);
+        when(validated.payer()).thenReturn(payer);
+        when(validated.payee()).thenReturn(payee);
+
+        when(validated.payeerWallet()).thenReturn(payerWallet);
+        when(validated.payeeWallet()).thenReturn(payeeWallet);
+
+        when(payerWallet.withdraw(any())).thenReturn(updatedPayerWallet);
+        when(payeeWallet.deposit(any())).thenReturn(updatedPayeeWallet);
 
         useCase.execute(command);
+
+        verify(walletDataProvider).save(updatedPayerWallet);
+        verify(walletDataProvider).save(updatedPayeeWallet);
 
         ArgumentCaptor<Transference> transferenceCaptor = ArgumentCaptor.forClass(Transference.class);
         verify(transferenceDataProvider, times(1)).save(transferenceCaptor.capture());
 
         Transference saved = transferenceCaptor.getValue();
         assertEquals(pendingTransference.fail().status(), saved.status());
+
+        ArgumentCaptor<NotificationEvent> notifyCaptor = ArgumentCaptor.forClass(NotificationEvent.class);
+        verify(notificationPublisher, times(1)).publish(notifyCaptor.capture());
+
+        NotificationEvent event = notifyCaptor.getValue();
+        assertEquals(payer.getEmail(), event.email());
+        assertEquals(NotificationEventEnum.TRANSFERENCE_FAILED, event.event());
     }
 
     @Test
@@ -112,6 +172,8 @@ class TransferUseCaseTest {
         assertThrows(TransferenceNotFoundException.class, () -> useCase.execute(command));
 
         verify(validator, never()).validate(anyInt(), anyInt(), any());
+        verify(walletDataProvider, never()).save(any());
         verify(transferenceDataProvider, never()).save(any());
+        verify(notificationPublisher, never()).publish(any());
     }
 }

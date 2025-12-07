@@ -5,13 +5,22 @@ import com.xvitu.transferences.application.exception.TransferenceNotFoundExcepti
 import com.xvitu.transferences.domain.dataprovider.TransferenceDataProvider;
 import com.xvitu.transferences.domain.dataprovider.WalletDataProvider;
 import com.xvitu.transferences.domain.entity.Transference;
+import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.domain.entity.Wallet;
+import com.xvitu.transferences.domain.enums.NotificationEventEnum;
 import com.xvitu.transferences.domain.service.TransferenceValidator;
 import com.xvitu.transferences.domain.vo.ValidatedTransference;
 import com.xvitu.transferences.infrastructure.gateway.authorization.AuthorizationGateway;
+import com.xvitu.transferences.infrastructure.gateway.authorization.response.AuthorizationResponse;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationEvent;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.NotificationPublisher;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class TransferUseCase {
@@ -19,17 +28,19 @@ public class TransferUseCase {
     private final TransferenceDataProvider transferenceDataProvider;
     private final AuthorizationGateway authorizationGateway;
     private final WalletDataProvider walletDataProvider;
+    private final NotificationPublisher notificationPublisher;
 
     public TransferUseCase(
             TransferenceDataProvider transferenceDataProvider,
             AuthorizationGateway authorizationGateway,
             TransferenceValidator transferenceValidator,
-            WalletDataProvider walletDataProvider
+            WalletDataProvider walletDataProvider, NotificationPublisher notificationPublisher
     ) {
         this.transferenceValidator = transferenceValidator;
         this.transferenceDataProvider = transferenceDataProvider;
         this.authorizationGateway = authorizationGateway;
         this.walletDataProvider = walletDataProvider;
+        this.notificationPublisher = notificationPublisher;
     }
 
     @Transactional
@@ -38,23 +49,43 @@ public class TransferUseCase {
         Integer payeeId = command.payeeId();
 
         Transference transference = transferenceDataProvider.findById(command.transferenceId())
-                .orElseThrow( () -> new TransferenceNotFoundException(command.transferenceId()));
+                .orElseThrow(() -> new TransferenceNotFoundException(command.transferenceId()));
 
-        ValidatedTransference validatedTransference = transferenceValidator.validate(payerId, payeeId, command.amount());
+        ValidatedTransference validated = transferenceValidator.validate(
+                payerId, payeeId, command.amount()
+        );
 
-        authorizationGateway.get().flatMap( response -> {
-            Wallet updatedPayerWallet = validatedTransference.payeerWallet().withdraw(transference.amount());
-            walletDataProvider.save(updatedPayerWallet);
+        AuthorizationResponse response = authorizationGateway.get().block();
 
-            Wallet updatedPayeeWallet = validatedTransference.payeeWallet().deposit(transference.amount());
-            walletDataProvider.save(updatedPayeeWallet);
+        Wallet updatedPayer = validated.payeerWallet().withdraw(transference.amount());
+        walletDataProvider.save(updatedPayer);
 
-            Transference updatedTransference = response.data().authorization()
-                    ? transference.success()
-                    : transference.fail();
+        Wallet updatedPayee = validated.payeeWallet().deposit(transference.amount());
+        walletDataProvider.save(updatedPayee);
 
-            return Mono.fromRunnable(() -> transferenceDataProvider.save(updatedTransference))
-                    .thenReturn(updatedTransference);
-        }).subscribe();
+        Transference updated = response.data().authorization()
+                ? transference.success()
+                : transference.fail();
+
+        transferenceDataProvider.save(updated);
+
+        notifyUser(updated, validated.payer(), validated.payee());
+    }
+
+    private void notifyUser(Transference transference, User payer, User payee) {
+        ArrayList<NotificationEvent> notificationEvents = new ArrayList<>();
+        switch (transference.status()){
+            case FAILED:
+                notificationEvents.add(new NotificationEvent(payer.getEmail(), NotificationEventEnum.TRANSFERENCE_FAILED));
+                break;
+            case SUCCESS:
+                notificationEvents.add(new NotificationEvent(payer.getEmail(), NotificationEventEnum.TRANSFERENCE_SEND));
+                notificationEvents.add(new NotificationEvent(payee.getEmail(), NotificationEventEnum.TRANSFERENCE_RECEIVED));
+                break;
+            default:
+                break;
+        }
+
+        notificationEvents.forEach(notificationPublisher::publish);
     }
 }
