@@ -1,6 +1,23 @@
 version: "3.9"
 
+networks:
+  transferences-network:
+
 services:
+  transference:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - rabbitmq
+    networks:
+      - transferences-network
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/transferencesdb
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+
   postgres:
     image: postgres:16
     restart: always
@@ -12,6 +29,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - transferences-network
 
   rabbitmq:
     image: rabbitmq:3.12-management
@@ -24,6 +43,8 @@ services:
       RABBITMQ_DEFAULT_PASS: admin
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - transferences-network
 
 volumes:
   postgres_data:

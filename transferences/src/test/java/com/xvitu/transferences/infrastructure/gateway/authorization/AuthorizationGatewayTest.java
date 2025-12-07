@@ -21,9 +21,8 @@ class AuthorizationGatewayTest {
     void setup() {
         exchangeFunction = mock(ExchangeFunction.class);
 
-        WebClient webClient = WebClient.builder()
-                .exchangeFunction(exchangeFunction)
-                .build();
+        WebClient.Builder webClient = WebClient.builder()
+                .exchangeFunction(exchangeFunction);
 
         gateway = new AuthorizationGateway(webClient);
     }

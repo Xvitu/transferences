@@ -1,9 +1,15 @@
 spring:
   rabbitmq:
-    host: localhost
+    host: rabbitmq
     port: 5672
     username: admin
     password: admin
+    connection-timeout: 30000
+    template:
+      retry:
+        enabled: true
+        max-attempts: 5
+        initial-interval: 5s
     listener:
       simple:
         retry:
