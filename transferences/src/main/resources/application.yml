@@ -4,6 +4,14 @@ spring:
     port: 5672
     username: admin
     password: admin
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 5000
+          max-attempts: 3
+          max-interval: 60000
+          multiplier: 2.0
 
   datasource:
     url: jdbc:postgresql://localhost:5432/transferencesdb
