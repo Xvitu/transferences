@@ -1,6 +1,6 @@
 package com.xvitu.transferences.application.usecase;
 
-import com.xvitu.transferences.application.command.TransferCommand;
+import com.xvitu.transferences.application.command.CreateTransferenceCommand;
 import com.xvitu.transferences.application.exception.InvalidPayerTypeException;
 import com.xvitu.transferences.application.exception.UserNotFoundException;
 import com.xvitu.transferences.application.exception.UserWalletNotFoundException;
@@ -37,7 +37,7 @@ public class CreateTransferenceUseCase {
     }
 
     @Transactional
-    public Transference execute(TransferCommand command) {
+    public Transference execute(CreateTransferenceCommand command) {
         Integer payerId = command.payer();
         Integer payeeId = command.payee();
 
@@ -69,7 +69,7 @@ public class CreateTransferenceUseCase {
         return transference;
     }
 
-    private void publishEvent(TransferCommand command, UUID transferenceId) {
+    private void publishEvent(CreateTransferenceCommand command, UUID transferenceId) {
         transferencePublisher.publish(
                 new TransferEvent(
                         transferenceId.toString(), command.payer(), command.payee(), command.value()

@@ -1,7 +1,7 @@
 package com.xvitu.transferences.boundary.controller;
 
 
-import com.xvitu.transferences.application.command.TransferCommand;
+import com.xvitu.transferences.application.command.CreateTransferenceCommand;
 import com.xvitu.transferences.application.usecase.CreateTransferenceUseCase;
 import com.xvitu.transferences.boundary.controller.requests.TransferRequest;
 import com.xvitu.transferences.domain.entity.Transference;
@@ -24,7 +24,7 @@ public class TransferController {
     @PostMapping("/transfer")
     @ResponseStatus(HttpStatus.CREATED)
     public Transference transfer(@RequestBody @Valid TransferRequest request) {
-        TransferCommand command = new TransferCommand(request.value(), request.payer(), request.payee());
+        CreateTransferenceCommand command = new CreateTransferenceCommand(request.value(), request.payer(), request.payee());
         return createTransferenceUseCase.execute(command);
     }
 }

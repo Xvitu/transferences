@@ -1,6 +1,6 @@
 package com.xvitu.transferences.application.usecase;
 
-import com.xvitu.transferences.application.command.TransferCommand;
+import com.xvitu.transferences.application.command.CreateTransferenceCommand;
 import com.xvitu.transferences.application.exception.InvalidPayerTypeException;
 import com.xvitu.transferences.application.exception.UserNotFoundException;
 import com.xvitu.transferences.application.exception.UserWalletNotFoundException;
@@ -50,13 +50,13 @@ class CreateTransferenceUseCaseTest {
     private static final Integer PAYER_ID = 1;
     private static final Integer PAYEE_ID = 2;
     private static final BigDecimal TRANSFER_VALUE = new BigDecimal("100.00");
-    private TransferCommand validCommand;
+    private CreateTransferenceCommand validCommand;
     private User customerPayer;
     private User shopkeeperPayee;
 
     @BeforeEach
     void setUp() {
-        validCommand = new TransferCommand(TRANSFER_VALUE, PAYER_ID, PAYEE_ID);
+        validCommand = new CreateTransferenceCommand(TRANSFER_VALUE, PAYER_ID, PAYEE_ID);
 
         customerPayer = new User(PAYER_ID, "Payer User", "11122233344", "payer@test.com", "pass", UserType.CUSTOMER);
         shopkeeperPayee = new User(PAYEE_ID, "Payee User", "55566677788", "payee@test.com", "pass", UserType.SHOPKEEPER);

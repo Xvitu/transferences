@@ -1,6 +1,6 @@
 package com.xvitu.transferences.boundary.controller;
 
-import com.xvitu.transferences.application.command.TransferCommand;
+import com.xvitu.transferences.application.command.CreateTransferenceCommand;
 import com.xvitu.transferences.application.usecase.CreateTransferenceUseCase;
 import com.xvitu.transferences.boundary.controller.requests.TransferRequest;
 import com.xvitu.transferences.domain.entity.Transference;
@@ -49,7 +49,7 @@ class TransferControllerTest {
                 PAYEE_ID
         );
 
-        when(createTransferenceUseCase.execute(any(TransferCommand.class)))
+        when(createTransferenceUseCase.execute(any(CreateTransferenceCommand.class)))
                 .thenReturn(mockTransference);
 
         mockMvc.perform(post(API_URL)
@@ -63,7 +63,7 @@ class TransferControllerTest {
                 .andExpect(jsonPath("$.payeeId").value(PAYEE_ID))
                 .andExpect(jsonPath("$.status").value("PENDING"));
 
-        verify(createTransferenceUseCase, times(1)).execute(any(TransferCommand.class));
+        verify(createTransferenceUseCase, times(1)).execute(any(CreateTransferenceCommand.class));
     }
 
     @Test
@@ -76,6 +76,6 @@ class TransferControllerTest {
                 .andExpect(status().isUnprocessableContent())
                 .andExpect(jsonPath("$.message").value("O valor da transferência é obrigatório."));
 
-        verify(createTransferenceUseCase, never()).execute(any(TransferCommand.class));
+        verify(createTransferenceUseCase, never()).execute(any(CreateTransferenceCommand.class));
     }
 }
