@@ -10,8 +10,12 @@ import com.xvitu.transferences.domain.dataprovider.WalletDataProvider;
 import com.xvitu.transferences.domain.entity.Transference;
 import com.xvitu.transferences.domain.entity.User;
 import com.xvitu.transferences.domain.entity.Wallet;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.TransferEvent;
+import com.xvitu.transferences.infrastructure.rabbitmq.publisher.TransferencePublisher;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
+
+import java.util.UUID;
 
 @Component
 public class CreateTransferenceUseCase {
@@ -19,15 +23,17 @@ public class CreateTransferenceUseCase {
     private final UserDataProvider userDataProvider;
     private final WalletDataProvider walletDataProvider;
     private final TransferenceDataProvider transferenceDataProvider;
+    private final TransferencePublisher transferencePublisher;
 
     public CreateTransferenceUseCase(
             UserDataProvider userDataProvider,
             WalletDataProvider walletDataProvider,
-            TransferenceDataProvider transferenceDataProvider
+            TransferenceDataProvider transferenceDataProvider, TransferencePublisher transferencePublisher
     ) {
         this.userDataProvider = userDataProvider;
         this.walletDataProvider = walletDataProvider;
         this.transferenceDataProvider = transferenceDataProvider;
+        this.transferencePublisher = transferencePublisher;
     }
 
     @Transactional
@@ -56,10 +62,19 @@ public class CreateTransferenceUseCase {
         Transference transference = Transference.pending(command.value(), command.payer(), command.payee());
         transferenceDataProvider.save(transference);
 
-        // todo - publica na fila
+        publishEvent(command);
+
         // todo - usar outbox
 
         return transference;
+    }
+
+    private void publishEvent(TransferCommand command) {
+        transferencePublisher.publish(
+                new TransferEvent(
+                        UUID.randomUUID().toString(), command.payer(), command.payee(), command.value()
+                )
+        );
     }
 }
 
