@@ -25,3 +25,15 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
+resilience4j:
+  retry:
+    instances:
+      authorizationRetry:
+        maxAttempts: 3
+        waitDuration: 2s
+
+  timelimiter:
+    instances:
+      authorizationTimeLimiter:
+        timeoutDuration: 3s
