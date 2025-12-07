@@ -40,7 +40,7 @@ class TransferencePublisherTest {
 
         verify(rabbitTemplate, times(1)).convertAndSend(
                 RabbitConfig.MAIN_EXCHANGE,
-                RabbitConfig.MAIN_ROUTING_KEY,
+                RabbitConfig.TRANSFERENCE_ROUTING_KEY,
                 mockEvent
         );
 
