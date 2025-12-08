@@ -21,13 +21,6 @@ public class AuthorizationGateway {
         this.webClient = webClientBuilder.baseUrl("https://util.devi.tools/api/v2").build();
     }
 
-    // todo - documentacao
-    // todo - flyway
-
-    // se der tempo amanha
-    // todo - idepotencia
-    // todo - outbox
-
     @Retry(name = "authorizationRetry")
     @TimeLimiter(name = "authorizationTimeLimiter")
     public Mono<AuthorizationResponse> get() {
