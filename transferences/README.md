@@ -30,6 +30,8 @@ A aplicação utiliza um conjunto de dependências do ecossistema Spring e bibli
 
 - **postgresql:42.7.3**  
   Driver JDBC para conexão com PostgreSQL.
+- **flyway**
+  Rodar as migration do projeto
 
 ### **Resiliência**
 
